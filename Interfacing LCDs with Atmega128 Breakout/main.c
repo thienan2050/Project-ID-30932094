@@ -18,25 +18,26 @@ ISR(TIMER1_OVF_vect)
 	{
 		ui16_counter++;
 	}
-	TCNT1H = 0xF3;
-	TCNT1L = 0xCB;
+	TCNT1H = 0xFF;
+	TCNT1L = 0xF8;
 	
 }
 
 /* Handler for PE4.*/
 ISR(INT4_vect)
 {
-	LCD_Clear();
-	LCD_Printf("Interrupt");
-	b_stop = true;
+	//LCD_Clear();
+	//LCD_Printf("Interrupt");
+	if(b_start)
+		b_stop = true;
 }
 
 int main(void)
 {
 	TCCR1A = 0x00;
-	TCCR1B = 0x04;       // Prescale = 256
-	TCNT1H = 0xF3;
-	TCNT1L = 0xCB; 	     //	100ms = 62411 clock timer
+	TCCR1B = 0x01;       // No prescale
+	TCNT1H = 0xFF;
+	TCNT1L = 0xF8; 	     //	1us = 65528 clock timer
 	TIMSK  = 0x04;
 	
 	DDRC |= 1<<FOUT1;	 // Configure PC4 as output
@@ -72,12 +73,12 @@ int main(void)
 		if((ui16_counter != ui16_lastCounter)&&(b_stop == false)&&(!(PINC & (1<<FIN1))))
 		{
 			LCD_Clear();
-			LCD_Printf("%d ms", ui16_counter);
+			LCD_Printf("%d us", ui16_counter);
 		}
 		if(b_stop == true)
 		{
 			LCD_Clear();
-			LCD_Printf("Last %dms", ui16_counter);
+			LCD_Printf("Last %dus", ui16_counter);
 			b_stop = false;
 			b_start = false;
 			ui16_counter = 0;
