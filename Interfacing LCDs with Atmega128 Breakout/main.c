@@ -11,7 +11,7 @@
 volatile uint16_t ui16_counter = 0, ui16_lastCounter = 0;
 volatile bool b_start = false, b_stop = false;
 bool ui8_pressed = false;
-
+uint8_t COUNT = 0;
 ISR(TIMER1_OVF_vect)
 {
 	if(b_start)
@@ -60,6 +60,7 @@ int main(void)
 			PORTC &= ~(1<<FOUT1);	//Set FOUT1 = LOW
 			b_start = true;
 			ui8_pressed = true;
+			COUNT++;
 			//LCD_Clear();
 			//LCD_Printf("PRESSED");
 		}
@@ -79,6 +80,8 @@ int main(void)
 		{
 			LCD_Clear();
 			LCD_Printf("Last %dms", ui16_lastCounter);
+			LCD_GoToNextLine();
+			LCD_Printf("COUNT = %d", COUNT);
 			b_stop = false;
 			b_start = false;
 			ui16_counter = 0;
